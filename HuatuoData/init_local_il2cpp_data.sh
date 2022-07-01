@@ -3,7 +3,8 @@
 # 请修改为你所用Unity的il2cpp目录
 # 一般像这样 C:\Program Files\Unity\Hub\Editor\2020.3.33f1c2\Editor\Data\il2cpp
 
-IL2CPP_PATH='/c/Program Files/Unity/Hub/Editor/2020.3.33f1c2/Editor/Data/il2cpp'
+#IL2CPP_PATH='/c/Program Files/Unity/Hub/Editor/2020.3.33f1c2/Editor/Data/il2cpp'
+IL2CPP_PATH='/Applications/Unity/Hub/Editor/2021.3.1f1c1/Unity.app/Contents/il2cpp'
 
 if [ ! -d "$IL2CPP_PATH" ] ; then
     echo "你未指定正确的il2cpp路径"
