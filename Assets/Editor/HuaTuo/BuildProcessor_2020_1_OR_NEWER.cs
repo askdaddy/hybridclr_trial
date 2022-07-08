@@ -25,6 +25,9 @@ namespace Huatuo
         , IPostprocessBuildWithReport
 #endif
         , IFilterBuildAssemblies, IPostBuildPlayerScriptDLLs, IUnityLinkerProcessor
+#if !UNITY_2021_1_OR_NEWER
+    , IIl2CppProcessor
+#endif
     {
 
 #if !UNITY_IOS
@@ -39,7 +42,7 @@ namespace Huatuo
             var localIl2cppDir = $"{projDir}/HuatuoData/LocalIl2CppData/il2cpp";
             if (!Directory.Exists(localIl2cppDir))
             {
-                Debug.LogError($"本地il2cpp目录:{localIl2cppDir} 不存在，请手动执行 {projDir}/HuatuoData 目录下的 init_local_il2cpp_data.bat 或者 init_local_il2cpp_data.sh 文件");
+                Debug.LogError($"本地il2cpp目录:{localIl2cppDir} 不存在，未安装本地il2cpp。请手动执行一次 {projDir}/HuatuoData 目录下的 init_local_il2cpp_data.bat 或者 init_local_il2cpp_data.sh 文件");
             }
             Environment.SetEnvironmentVariable("UNITY_IL2CPP_PATH", localIl2cppDir);
         }
@@ -173,6 +176,10 @@ namespace Huatuo
             //        Debug.LogWarning($"can not find the strip dll, path = {dllPath}");
             //    }
             //}
+#if UNITY_2021_1_OR_NEWER
+            BuildTarget target = EditorUserBuildSettings.activeBuildTarget;
+            CopyStripDlls(target);
+#endif
         }
 
         public string GenerateAdditionalLinkXmlFile(BuildReport report, UnityLinkerBuildPipelineData data)
@@ -197,14 +204,21 @@ namespace Huatuo
 
         public void OnBeforeConvertRun(BuildReport report, Il2CppBuildPipelineData data)
         {
+#if !UNITY_2021_1_OR_NEWER
+            CopyStripDlls(data.target);
+#endif
+        }
+
+        private void CopyStripDlls(BuildTarget target)
+        {
             var projDir = Path.GetDirectoryName(Application.dataPath);
-            var dstPath = $"{projDir}/HuatuoData/AssembliesPostIl2CppStrip/{data.target}";
+            var dstPath = $"{projDir}/HuatuoData/AssembliesPostIl2CppStrip/{target}";
 
             Directory.CreateDirectory(dstPath);
 
-            string srcStripDllPath = projDir + "/" + (data.target == BuildTarget.Android ?  "Temp/StagingArea/assets/bin/Data/Managed": "Temp/StagingArea/Data/Managed/");
+            string srcStripDllPath = projDir + "/" + (target == BuildTarget.Android ? "Temp/StagingArea/assets/bin/Data/Managed" : "Temp/StagingArea/Data/Managed/");
 
-            foreach(var fileFullPath in Directory.GetFiles(srcStripDllPath, "*.dll"))
+            foreach (var fileFullPath in Directory.GetFiles(srcStripDllPath, "*.dll"))
             {
                 var file = Path.GetFileName(fileFullPath);
                 Debug.Log($"copy strip dll {fileFullPath} ==> {dstPath}/{file}");
@@ -213,7 +227,7 @@ namespace Huatuo
         }
 
 
-#if   UNITY_IOS
+#if UNITY_IOS
     // hook UnityEditor.BuildCompletionEventsHandler.ReportPostBuildCompletionInfo() ? 因为没有 mac 打包平台因此不清楚
 #endif
     }
