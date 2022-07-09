@@ -7,7 +7,7 @@ git clone https://gitee.com/focus-creative-games/il2cpp_plus il2cpp_huatuo_repo
 
 
 rem set default branch
-set IL2CPP_BRANCH=2020.3.33
+set IL2CPP_BRANCH=2021.3.1
 cd il2cpp_huatuo_repo
 
 git switch %IL2CPP_BRANCH%
@@ -15,7 +15,7 @@ git switch %IL2CPP_BRANCH%
 cd ..
 
 rem replace with right Unity Editor Install path
-set IL2CPP_PATH=C:\Program Files\Unity\Hub\Editor\2020.3.33f1\Editor\Data\il2cpp
+set IL2CPP_PATH=D:\Unity\Hub\Editor\2021.3.1f1c1\Editor\Data\il2cpp
 
 if not exist "%IL2CPP_PATH%" (
     echo "please set correct IL2CPP_PATH value"
